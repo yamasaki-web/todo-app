@@ -14,6 +14,10 @@ function App() {
   // 今どのタブが選ばれているかを記憶する箱（初期値は "all"）
   const [filter, setFilter] = useState("all");
 
+  const [keyword,setKeyword]=useState("");
+
+  const [sortType,setSortType] = useState("new");
+
 // 【自動保存】todosの中身が書き換わるたびに、最新の状態を倉庫に保存する
   useEffect(() => {
     localStorage.setItem("my_todos", JSON.stringify(todos));
@@ -34,7 +38,8 @@ function App() {
       title: text,
       isCompleted: false,
       isImportant: false,
-      date: dateString
+      date: dateString,
+      createdAt:Date.now()
     };
 
     // 元のtodosのコピーに、新しいタスクを1つ追加して、全体を差し替える
@@ -120,16 +125,31 @@ function App() {
 
   // 画面に表示するための「絞り込まれたリスト」を作る
   const filteredTodos = todos.filter((todo) => {
-    if (filter === "all") {
-      return true; //"all"なら全部残す
-    } else if (filter === "active") {
-      return !todo.isCompleted;// "active"なら未完了(false)だけ残す
+    const matchesKeyword=todo.title.toLowerCase().includes(keyword.toLowerCase());
+    let matchesFilter = true;
+
+    if (filter === "active") {
+      matchesFilter= !todo.isCompleted;// "active"なら未完了(false)だけ残す
     } else if (filter === "completed") {
-      return todo.isCompleted;// "completed"なら完了済み(true)だけ残す
+      matchesFilter= todo.isCompleted;// "completed"なら完了済み(true)だけ残す
     } else if (filter === "important") {
-      return todo.isImportant;//「重要(true)」だけ残す
+      matchesFilter= todo.isImportant;//「重要(true)」だけ残す
     }
-    return true;
+    return matchesKeyword && matchesFilter;
+  });
+
+  const sortedTodos=[...filteredTodos];
+  sortedTodos.sort((a,b)=> {
+    if(sortType === "new"){
+      return b.createdAt - a.createdAt;
+    }
+    if(sortType === "old"){
+      return a.createdAt - b.createdAt;
+    }
+    if(sortType === "title"){
+      return a.title.localeCompare(b.title);
+    }
+    return 0;
   });
 
   return (
@@ -148,16 +168,34 @@ function App() {
       <p style={{marginTop: "24px", color: "#333"}}>入力中の文字：{text}</p>
       <p>完了済み:{todos.filter(t => t.isCompleted).length} 件 / 全体:{todos.length} 件</p>
 
+      <div>
+        <input 
+        type="text"
+        placeholder="タスクを検索"
+        value={keyword}
+        onChange={(e)=>setKeyword(e.target.value)}
+         />
+      </div>
+
+      <select 
+      value={sortType}
+      onChange={(e) => setSortType(e.target.value)}
+      >
+        <option value="new">日付（新しい順）</option>
+        <option value="old">日付（古い順）</option>
+        <option value="title">あいうえお順</option>
+      </select>
+
       <div style={{ marginTop: "24px", marginBottom: "24px", display: "flex", gap: "8px", justifyContent:"center"}}>
         <button onClick={()=>setFilter("all")} style={{fontWeight:filter==="all"?"bold":"normal"}}>すべて</button>
-        <button onClick={()=>setFilter("active")} style={{fontWeight:filter==="active"?"bold":"normal"}}>未完了</button>
         <button onClick={() => setFilter("completed")} style={{fontWeight:filter==="completed"?"bold":"normal"}}>完了済み</button>
+        <button onClick={()=>setFilter("active")} style={{fontWeight:filter==="active"?"bold":"normal"}}>未完了</button>
         <button onClick={() => setFilter("important")} style={{fontWeight:filter==="important"?"bold":"normal"}}>★重要のみ</button>
       </div>
 
       <ul>
         {/* 【重要変更】「todos」ではなく、新たに作った「filteredTodos」を使ってループする*/}
-        {filteredTodos.map((todo) => (
+        {sortedTodos.map((todo) => (
           <li key={todo.id}
             style={{
               textDecoration: todo.isCompleted ? "line-through" : "none",
@@ -168,7 +206,7 @@ function App() {
               borderRadius:"5px"
             }}
           >
-            <span onClick={() => toggleComplete(todo.id)} style={{ cursor: "pointer" }}>
+            <span>
               {todo.isImportant ? "★" :""}
               {todo.title}
             </span>
@@ -177,11 +215,10 @@ function App() {
               ({todo.date})
             </small>
 
-            <button onClick={() => toggleImportant(todo.id)} style={{ marginLeft: "15px", cursor:"pointer" }}>
-            {todo.isImportant ? "重要解除" : "重要"}
-            </button>
-            <button onClick={() => deleteTodo(todo.id)} style={{ marginLeft: "10px" }}>削除</button>
+            <button onClick={() => toggleComplete(todo.id)} style={{ marginLeft: "15px",cursor:"pointer" }}>{todo.isCompleted ? "未完了" : "完了"}</button>
             <button onClick={() => editTodo(todo.id)} style={{ marginLeft: "10px", backgroundColor: "#4caf50", color: "white" , border: "none",borderRadius: "3px", cursor: "pointer"}}>編集</button>
+            <button onClick={() => toggleImportant(todo.id)} style={{ marginLeft: "15px", cursor:"pointer" }}>{todo.isImportant ? "重要解除" : "重要"}</button>
+            <button onClick={() => deleteTodo(todo.id)} style={{ marginLeft: "10px",cursor:"pointer" }}>削除</button>
           </li>
         ))}
       </ul>
