@@ -1,0 +1,172 @@
+.todo {
+  max-width: 600px;
+  width: 100%;
+  margin-inline: auto;
+  padding: 30px;
+  background-color: #fff;
+  color: #333;
+
+  &__title {
+    margin-bottom: 24px;
+    color: #333;
+  }
+
+  // タスク入力
+  &__input-area {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  &__input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #666;
+    }
+  }
+
+  &__input-text {
+    margin-top: 24px;
+  }
+
+  &__count {
+    margin-top: 10px;
+  }
+
+  // 検索
+  &__search {
+    margin-top: 20px;
+  }
+
+  // 並び替え
+  &__sort {
+    margin-top: 15px;
+  }
+
+  &__select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  // フィルター
+  &__filter {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  // Todo一覧
+  &__list {
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    margin-bottom: 6px;
+    border-radius: 5px;
+    list-style: none;
+
+    &--completed {
+      color: #ccc;
+      text-decoration: line-through;
+    }
+
+    &--important {
+      background-color: #fffacd;
+    }
+
+    .todo__button{
+      &:nth-child(1 of .todo__button){
+        margin-left: auto;
+      }
+    }
+  }
+
+  &__text {
+    cursor: default;
+  }
+
+  &__date {
+    color: #888;
+    margin-left: 7px;
+  }
+
+  // ボタン共通
+  &__button {
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &--active {
+      outline: 1px solid #666;
+    }
+    &--all {
+      background: #f7bcbb;
+    }
+    &--completed {
+      background: #A9C8EE;
+      background: red;
+    }
+    &--incomplete {
+      background: #a9e8ee;
+    }
+    &--important {
+      background: #E5D994;
+    }
+
+
+
+    &--add {
+      background-color: #333;
+      color: #fff;
+      border-color: #333;
+    }
+
+    &--complete {
+      background: #A9C8EE;
+    }
+
+    &--completed{
+      background: #a9e8ee;
+    }
+    
+    &--edit {
+      background: #A9DDAF;
+    }
+    
+    &--important {
+      background: #E5D994;
+    }
+    
+    &--delete {
+      background: #E5AAA5;
+    }
+
+    &--clear {
+      margin-top: 20px;
+      background: #b50c00;
+      color: #fff;
+      border: none;
+    }
+  }
+}
